@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ruleta Navideña 3D 🎄</title>
+  <title>🎄Ruleta Navideña🎄</title>
   <style>
     body {
       background: radial-gradient(circle at center, #004400 0%, #990000 100%);
@@ -66,14 +66,20 @@
       top: 50%;
       left: 50%;
       transform-origin: center;
-      font-size: 2.5em;
+      font-size: 4em; /* AUMENTADO */
       pointer-events: none;
-      transition: filter 0.3s;
+      width: 1em;
+      height: 1em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: -0.5em; /* CENTRADO MEJORADO */
     }
 
-    .e1 { transform: rotate(60deg) translateY(-120px); }
-    .e2 { transform: rotate(180deg) translateY(-120px); }
-    .e3 { transform: rotate(300deg) translateY(-120px); }
+    /* Mejor centrado ajustando la distancia radial */
+    .e1 { transform: rotate(60deg) translateY(-100px) rotate(-60deg); }
+    .e2 { transform: rotate(180deg) translateY(-100px) rotate(-180deg); }
+    .e3 { transform: rotate(300deg) translateY(-100px) rotate(-300deg); }
 
     @keyframes brillar {
       0%, 100% { filter: drop-shadow(0 0 5px gold) brightness(1); }
@@ -111,7 +117,7 @@
   </style>
 </head>
 <body>
-  <h1>🎄 Ruleta Navideña 3D 🎅</h1>
+  <h1>🎁Ruleta Navideña🎁</h1>
 
   <div class="ruleta-container">
     <div id="flecha"></div>
@@ -135,17 +141,14 @@
       girando = true;
       ruleta.classList.add("girando");
 
-      // Girar: cambiar de +3600° a + varias vueltas + ángulo aleatorio
-      const vueltas = 10; // cambiar número de vueltas si lo deseas
+      const vueltas = 10;
       const gradosAleatorios = Math.floor(Math.random() * 360);
       const grados = vueltas * 360 + gradosAleatorios;
       ruleta.style.transform = `perspective(800px) rotateX(10deg) rotate(${grados}deg)`;
 
       setTimeout(() => {
-        const anguloFinal = gradosAleatorios % 360; 
-        // Cada sector ocupa 120° => calcular índice
+        const anguloFinal = gradosAleatorios % 360;
         const valorSector = Math.floor(anguloFinal / 120);
-        // Invertir para que coincida con flecha al tope superior
         const index = (sectores.length - 1) - valorSector;
         document.getElementById("resultado").innerHTML =
           `🎉 Resultado: <strong>${sectores[index]}</strong> 🎁`;
@@ -156,3 +159,4 @@
   </script>
 </body>
 </html>
+
