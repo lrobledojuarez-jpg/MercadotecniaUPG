@@ -1,173 +1,129 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🎄Ruleta Navideña🎄</title>
+  <meta charset="UTF-8">
+  <title>Captura de Código + Imagen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     body {
-      background: radial-gradient(circle at center, #004400 0%, #990000 100%);
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      font-family: "Poppins", sans-serif;
-      color: #fff;
-      margin: 0;
-      text-align: center;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
     }
 
-    h1 {
-      margin-bottom: 20px;
-      font-size: 2em;
-      text-shadow: 2px 2px 6px #000;
+    .fila {
+      border: 1px solid #ccc;
+      background: #fff;
+      padding: 10px;
+      margin-bottom: 10px;
     }
 
-    .ruleta-container {
-      position: relative;
+    .fila input[type="text"] {
+      width: 100%;
+      padding: 6px;
+      margin-bottom: 5px;
     }
 
-    .ruleta {
-      position: relative;
-      width: 350px;
-      height: 350px;
-      border-radius: 50%;
-      border: 8px solid #ffd700;
-      overflow: hidden;
-      background: conic-gradient(
-        #ff0000 0deg 120deg,
-        #006400 120deg 240deg,
-        #ffd700 240deg 360deg
-      );
-      box-shadow:
-        inset 0 5px 15px #00000055,
-        0 0 40px 10px rgba(255, 215, 0, 0.4),
-        0 8px 30px rgba(255, 215, 0, 0.6);
-      transform: perspective(800px) rotateX(10deg);
-      transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
-    }
-
-    #flecha {
-      position: absolute;
-      top: -30px;
-      left: calc(50% - 20px);
-      width: 0;
-      height: 0;
-      border-left: 20px solid transparent;
-      border-right: 20px solid transparent;
-      border-bottom: 40px solid gold;
-      filter: drop-shadow(0 0 10px gold);
-      z-index: 10;
-    }
-
-    .emoji {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform-origin: center;
-      font-size: 4em;
-      pointer-events: none;
-      width: 1em;
-      height: 1em;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: -0.5em;
-    }
-
-    .e1 { transform: rotate(60deg) translateY(-100px) rotate(-60deg); }
-    .e2 { transform: rotate(180deg) translateY(-100px) rotate(-180deg); }
-    .e3 { transform: rotate(300deg) translateY(-100px) rotate(-300deg); }
-
-    @keyframes brillar {
-      0%, 100% { filter: drop-shadow(0 0 5px gold) brightness(1); }
-      50% { filter: drop-shadow(0 0 15px #fff) brightness(1.5); }
-    }
-
-    .ruleta.girando .emoji {
-      animation: brillar 0.8s infinite ease-in-out;
-    }
-
-    #btnGirar {
-      margin-top: 30px;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 8px;
-      background: linear-gradient(145deg, #ffd700, #ffb700);
-      color: #b30000;
-      font-weight: bold;
-      font-size: 1.2em;
-      cursor: pointer;
-      box-shadow: 0 4px 8px #00000066, inset 0 2px 4px #ffffff99;
-      transition: 0.3s;
-    }
-
-    #btnGirar:hover {
-      background: linear-gradient(145deg, #ffe866, #ffc700);
-      transform: scale(1.05);
-    }
-
-    #resultado {
-      margin-top: 20px;
-      font-size: 1.3em;
-      text-shadow: 1px 1px 3px #000;
+    .fila img {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      display: none;
+      margin-top: 5px;
     }
   </style>
 </head>
 <body>
-  <h1>🎁Ruleta Navideña🎁</h1>
 
-  <div class="ruleta-container">
-    <div id="flecha"></div>
-    <div class="ruleta" id="ruleta">
-      <div class="emoji e1">🎅</div>
-      <div class="emoji e2">🎄</div>
-      <div class="emoji e3">🎁</div>
-    </div>
-  </div>
+<h2>Captura de Código Universal + Imagen</h2>
 
-  <button id="btnGirar">🍀 Girar Ruleta</button>
-  <div id="resultado"></div>
+<!-- Entrada de código -->
+<input
+  type="text"
+  id="entradaCodigo"
+  placeholder="Pega el código aquí"
+  autofocus
+/>
 
-  <!-- 🔊 AUDIO DE GIRO -->
-  <audio id="audioSpin" src="spin.wav" preload="auto"></audio>
+<hr>
 
-  <script>
-    const ruleta = document.getElementById("ruleta");
-    const audioSpin = document.getElementById("audioSpin");
-    const sectores = ["🎅", "🎄", "🎁"];
-    let girando = false;
+<!-- Contenedor de X -->
+<div id="contenedor"></div>
 
-    document.getElementById("btnGirar").addEventListener("click", () => {
-      if (girando) return;
-      girando = true;
+<script>
+  const total = 10;
+  let posicion = 0;
 
-      // 🔊 REPRODUCIR AUDIO
-      audioSpin.currentTime = 0;
-      audioSpin.play().catch(e => console.log("Autoplay bloqueado:", e));
+  // Estructura de datos
+  const x = Array.from({ length: total }, () => ({
+    codigo: null,
+    imagen: null
+  }));
 
-      ruleta.classList.add("girando");
+  const contenedor = document.getElementById("contenedor");
+  const entrada = document.getElementById("entradaCodigo");
 
-      const vueltas = 10;
-      const gradosAleatorios = Math.floor(Math.random() * 360);
-      const grados = vueltas * 360 + gradosAleatorios;
+  // Crear estructura HTML
+  for (let i = 0; i < total; i++) {
+    contenedor.innerHTML += `
+      <div class="fila">
+        <input type="text" id="codigo${i}" placeholder="x[${i}] código" readonly>
+        
+        <input
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onchange="capturarImagen(event, ${i})"
+        >
 
-      ruleta.style.transform =
-        `perspective(800px) rotateX(10deg) rotate(${grados}deg)`;
+        <img id="img${i}">
+      </div>
+    `;
+  }
 
-      setTimeout(() => {
-        const anguloFinal = gradosAleatorios % 360;
-        const valorSector = Math.floor(anguloFinal / 120);
-        const index = (sectores.length - 1) - valorSector;
+  // Bloquear escritura
+  entrada.addEventListener("keydown", e => e.preventDefault());
 
-        document.getElementById("resultado").innerHTML =
-          `🎉 Resultado: <strong>${sectores[index]}</strong> 🎁`;
+  // Pegar código
+  entrada.addEventListener("paste", e => {
+    e.preventDefault();
 
-        ruleta.classList.remove("girando");
-        girando = false;
-      }, 4500);
-    });
-  </script>
+    if (posicion >= total) {
+      alert("Se alcanzó el límite de 10 códigos");
+      return;
+    }
+
+    const codigo = e.clipboardData.getData("text").trim();
+
+    if (!/^\d+$/.test(codigo)) {
+      alert("El código debe ser numérico");
+      return;
+    }
+
+    x[posicion].codigo = codigo;
+    document.getElementById(`codigo${posicion}`).value = codigo;
+    posicion++;
+    entrada.value = "";
+  });
+
+  // Captura de imagen
+  function capturarImagen(event, index) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      x[index].imagen = reader.result;
+
+      const img = document.getElementById(`img${index}`);
+      img.src = reader.result;
+      img.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+  }
+</script>
+
 </body>
 </html>
+
