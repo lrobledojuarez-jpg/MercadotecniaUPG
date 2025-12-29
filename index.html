@@ -12,25 +12,42 @@
       background: #f4f4f4;
     }
 
+    h2 {
+      margin-bottom: 10px;
+    }
+
     .fila {
       border: 1px solid #ccc;
       background: #fff;
       padding: 10px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .fila input[type="text"] {
       width: 100%;
-      padding: 6px;
-      margin-bottom: 5px;
+      padding: 8px;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .fila input[type="file"] {
+      margin-bottom: 6px;
     }
 
     .fila img {
       width: 100%;
-      max-height: 200px;
+      max-height: 220px;
       object-fit: cover;
       display: none;
       margin-top: 5px;
+      border: 1px solid #ddd;
+    }
+
+    #entradaCodigo {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      font-size: 15px;
     }
   </style>
 </head>
@@ -38,38 +55,40 @@
 
 <h2>Captura de Código Universal + Imagen</h2>
 
-<!-- Entrada de código -->
+<!-- Campo superior (opcional, solo visual como en la imagen) -->
 <input
   type="text"
   id="entradaCodigo"
-  placeholder="Pega el código aquí"
-  autofocus
+  placeholder="Código escaneado (opcional)"
+  readonly
 />
 
 <hr>
 
-<!-- Contenedor de X -->
+<!-- Contenedor -->
 <div id="contenedor"></div>
 
 <script>
   const total = 10;
-  let posicion = 0;
 
   // Estructura de datos
   const x = Array.from({ length: total }, () => ({
-    codigo: null,
+    codigo: "",
     imagen: null
   }));
 
   const contenedor = document.getElementById("contenedor");
-  const entrada = document.getElementById("entradaCodigo");
 
-  // Crear estructura HTML
+  // Crear filas
   for (let i = 0; i < total; i++) {
     contenedor.innerHTML += `
       <div class="fila">
-        <input type="text" id="codigo${i}" placeholder="x[${i}] código" readonly>
-        
+        <input
+          type="text"
+          placeholder="x[${i}] código — escribir el código manualmente"
+          oninput="capturarCodigo(this.value, ${i})"
+        >
+
         <input
           type="file"
           accept="image/*"
@@ -82,32 +101,12 @@
     `;
   }
 
-  // Bloquear escritura
-  entrada.addEventListener("keydown", e => e.preventDefault());
+  // Guardar código manual
+  function capturarCodigo(valor, index) {
+    x[index].codigo = valor.trim();
+  }
 
-  // Pegar código
-  entrada.addEventListener("paste", e => {
-    e.preventDefault();
-
-    if (posicion >= total) {
-      alert("Se alcanzó el límite de 10 códigos");
-      return;
-    }
-
-    const codigo = e.clipboardData.getData("text").trim();
-
-    if (!/^\d+$/.test(codigo)) {
-      alert("El código debe ser numérico");
-      return;
-    }
-
-    x[posicion].codigo = codigo;
-    document.getElementById(`codigo${posicion}`).value = codigo;
-    posicion++;
-    entrada.value = "";
-  });
-
-  // Captura de imagen
+  // Capturar imagen
   function capturarImagen(event, index) {
     const file = event.target.files[0];
     if (!file) return;
@@ -122,6 +121,11 @@
     };
     reader.readAsDataURL(file);
   }
+</script>
+
+</body>
+</html>
+
 </script>
 
 </body>
