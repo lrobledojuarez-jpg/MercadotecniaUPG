@@ -6,87 +6,88 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      margin: 0;
-      padding: 16px;
-      background: #f2f4f8;
-      color: #222;
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 16px;
-    }
-
-    .referencia {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-bottom: 16px;
-      background: #fafafa;
-      font-size: 15px;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
     }
 
     .fila {
-      background: #ffffff;
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-
-    .titulo {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #444;
+      border: 1px solid #ccc;
+      background: #fff;
+      padding: 10px;
+      margin-bottom: 12px;
     }
 
     .fila input[type="text"] {
       width: 100%;
-      padding: 10px;
-      font-size: 15px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
+      padding: 8px;
+      margin-bottom: 6px;
+      font-size: 14px;
     }
 
     .fila input[type="file"] {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px dashed #888;
-      background: #f9f9f9;
-      font-size: 14px;
+      margin-bottom: 6px;
     }
 
     .fila img {
       width: 100%;
-      margin-top: 10px;
-      border-radius: 10px;
-      max-height: 240px;
+      max-height: 220px;
       object-fit: cover;
       display: none;
+      margin-top: 5px;
       border: 1px solid #ddd;
+    }
+
+    .cantidad-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .cantidad-control button {
+      padding: 4px 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .cantidad-control input {
+      width: 60px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .btn-cantidad {
+      background: #ff00ff;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    #entradaCodigo {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      font-size: 15px;
     }
   </style>
 </head>
+
 <body>
 
 <h2>Captura de Código Universal + Imagen</h2>
 
 <input
   type="text"
-  class="referencia"
-  placeholder="Código escaneado (solo referencia)"
+  id="entradaCodigo"
+  placeholder="Código escaneado (opcional)"
   readonly
->
+/>
+
+<hr>
 
 <div id="contenedor"></div>
 
@@ -95,7 +96,8 @@
 
   const x = Array.from({ length: total }, () => ({
     codigo: "",
-    imagen: null
+    imagen: null,
+    cantidad: 0
   }));
 
   const contenedor = document.getElementById("contenedor");
@@ -103,13 +105,11 @@
   for (let i = 0; i < total; i++) {
     contenedor.innerHTML += `
       <div class="fila">
-        <div class="titulo">Registro x[${i}]</div>
 
         <input
           type="text"
-          placeholder="Escribir código manualmente"
-          inputmode="numeric"
-          oninput="x[${i}].codigo = this.value"
+          placeholder="x[${i}] código — escribir el código manualmente"
+          oninput="capturarCodigo(this.value, ${i})"
         >
 
         <input
@@ -119,9 +119,21 @@
           onchange="capturarImagen(event, ${i})"
         >
 
+        <button class="btn-cantidad" type="button">cantidad</button>
+
+        <div class="cantidad-control">
+          <button type="button" onclick="cambiarCantidad(${i}, -1)">−</button>
+          <input type="number" id="cantidad${i}" value="0" readonly>
+          <button type="button" onclick="cambiarCantidad(${i}, 1)">+</button>
+        </div>
+
         <img id="img${i}">
       </div>
     `;
+  }
+
+  function capturarCodigo(valor, index) {
+    x[index].codigo = valor.trim();
   }
 
   function capturarImagen(event, index) {
@@ -137,8 +149,14 @@
     };
     reader.readAsDataURL(file);
   }
+
+  function cambiarCantidad(index, delta) {
+    x[index].cantidad = Math.max(0, x[index].cantidad + delta);
+    document.getElementById(`cantidad${index}`).value = x[index].cantidad;
+  }
 </script>
 
 </body>
 </html>
+
 
