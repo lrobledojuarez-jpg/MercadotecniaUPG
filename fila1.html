@@ -38,7 +38,6 @@
 
 <h2>Captura de Código Universal + Imagen</h2>
 
-<!-- Entrada de código -->
 <input
   type="text"
   id="entradaCodigo"
@@ -48,14 +47,24 @@
 
 <hr>
 
-<!-- Contenedor de X -->
 <div id="contenedor"></div>
+
+<button id="btnSave" style="
+  margin-top:20px;
+  padding:10px 20px;
+  background:#ff00ff;
+  color:#fff;
+  border:none;
+  font-size:16px;
+  cursor:pointer;
+">
+  Save
+</button>
 
 <script>
   const total = 10;
   let posicion = 0;
 
-  // Estructura de datos
   const x = Array.from({ length: total }, () => ({
     codigo: null,
     imagen: null
@@ -64,12 +73,11 @@
   const contenedor = document.getElementById("contenedor");
   const entrada = document.getElementById("entradaCodigo");
 
-  // Crear estructura HTML
   for (let i = 0; i < total; i++) {
     contenedor.innerHTML += `
       <div class="fila">
         <input type="text" id="codigo${i}" placeholder="x[${i}] código" readonly>
-        
+
         <input
           type="file"
           accept="image/*"
@@ -82,10 +90,8 @@
     `;
   }
 
-  // Bloquear escritura
   entrada.addEventListener("keydown", e => e.preventDefault());
 
-  // Pegar código
   entrada.addEventListener("paste", e => {
     e.preventDefault();
 
@@ -107,7 +113,6 @@
     entrada.value = "";
   });
 
-  // Captura de imagen
   function capturarImagen(event, index) {
     const file = event.target.files[0];
     if (!file) return;
@@ -115,15 +120,14 @@
     const reader = new FileReader();
     reader.onload = () => {
       x[index].imagen = reader.result;
-
       const img = document.getElementById(`img${index}`);
       img.src = reader.result;
       img.style.display = "block";
     };
     reader.readAsDataURL(file);
   }
-</script>
-  <script>
+
+  // ✅ SAVE
   document.getElementById("btnSave").addEventListener("click", () => {
 
     let contenido = "CAPTURA DE DATOS - FILA 1\n";
@@ -137,10 +141,8 @@
 
     contenido += `\nFecha: ${new Date().toLocaleString()}`;
 
-    // Guardar TXT en localStorage
     localStorage.setItem("fila1_txt", contenido);
 
-    // Crear archivo .txt
     const blob = new Blob([contenido], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
 
@@ -155,20 +157,5 @@
   });
 </script>
 
-<div id="contenedor"></div>
-  <button id="btnSave" style="
-  margin-top:20px;
-  padding:10px 20px;
-  background:#ff00ff;
-  color:#fff;
-  border:none;
-  font-size:16px;
-  cursor:pointer;
-">
-  Save
-</button>
-
-
 </body>
 </html>
- 
