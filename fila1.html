@@ -123,6 +123,51 @@
     reader.readAsDataURL(file);
   }
 </script>
+  <script>
+  document.getElementById("btnSave").addEventListener("click", () => {
+
+    let contenido = "CAPTURA DE DATOS - FILA 1\n";
+    contenido += "=========================\n\n";
+
+    x.forEach((item, index) => {
+      if (item.codigo) {
+        contenido += `x[${index}] código: ${item.codigo}\n`;
+      }
+    });
+
+    contenido += `\nFecha: ${new Date().toLocaleString()}`;
+
+    // Guardar TXT en localStorage
+    localStorage.setItem("fila1_txt", contenido);
+
+    // Crear archivo .txt
+    const blob = new Blob([contenido], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "fila1_datos.txt";
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+    alert("Datos guardados correctamente");
+  });
+</script>
+
+<div id="contenedor"></div>
+  <button id="btnSave" style="
+  margin-top:20px;
+  padding:10px 20px;
+  background:#ff00ff;
+  color:#fff;
+  border:none;
+  font-size:16px;
+  cursor:pointer;
+">
+  Save
+</button>
+
 
 </body>
 </html>
