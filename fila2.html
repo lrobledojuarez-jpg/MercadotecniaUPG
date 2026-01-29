@@ -1,26 +1,164 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Fila 1</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>Captura de Código + Imagen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f4f4f4;
-    padding: 20px;
-  }
-</style>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+
+    .fila {
+      border: 1px solid #ccc;
+      background: #fff;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .fila input[type="text"] {
+      width: 100%;
+      padding: 6px;
+      margin-bottom: 5px;
+    }
+
+    .fila img {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      display: none;
+      margin-top: 5px;
+    }
+  </style>
 </head>
-
 <body>
 
-<h2>Contenido FILA 1</h2>
+<h2>Captura de Código Universal + Imagen</h2>
 
-<p>Aquí va tu formulario, cámara, códigos, etc.</p>
+<input
+  type="text"
+  id="entradaCodigo"
+  placeholder="Pega el código aquí"
+  autofocus
+/>
 
-<a href="index.html">← Volver</a>
+<hr>
+
+<div id="contenedor"></div>
+
+<button id="btnSave" style="
+  margin-top:20px;
+  padding:10px 20px;
+  background:#ff00ff;
+  color:#fff;
+  border:none;
+  font-size:16px;
+  cursor:pointer;
+">
+  Save
+</button>
+
+<script>
+  const total = 10;
+  let posicion = 0;
+
+  const x = Array.from({ length: total }, () => ({
+    codigo: null,
+    imagen: null
+  }));
+
+  const contenedor = document.getElementById("contenedor");
+  const entrada = document.getElementById("entradaCodigo");
+
+  for (let i = 0; i < total; i++) {
+    contenedor.innerHTML += `
+      <div class="fila">
+        <input
+          type="text"
+          id="codigo${i}"
+          placeholder="x[${i}] código"
+          oninput="x[${i}].codigo = this.value"
+        >
+
+        <input
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onchange="capturarImagen(event, ${i})"
+        >
+
+        <img id="img${i}">
+      </div>
+    `;
+  }
+
+  entrada.addEventListener("keydown", e => e.preventDefault());
+
+  entrada.addEventListener("paste", e => {
+    e.preventDefault();
+
+    if (posicion >= total) {
+      alert("Se alcanzó el límite de 10 códigos");
+      return;
+    }
+
+    const codigo = e.clipboardData.getData("text").trim();
+
+    if (!/^\d+$/.test(codigo)) {
+      alert("El código debe ser numérico");
+      return;
+    }
+
+    x[posicion].codigo = codigo;
+    document.getElementById(`codigo${posicion}`).value = codigo;
+    posicion++;
+    entrada.value = "";
+  });
+
+  function capturarImagen(event, index) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      x[index].imagen = reader.result;
+      const img = document.getElementById(`img${index}`);
+      img.src = reader.result;
+      img.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+  }
+
+  document.getElementById("btnSave").addEventListener("click", () => {
+    let contenido = "CAPTURA DE DATOS - FILA 1\n";
+    contenido += "=========================\n\n";
+
+    x.forEach((item, index) => {
+      if (item.codigo) {
+        contenido += `x[${index}] código: ${item.codigo}\n`;
+      }
+    });
+
+    contenido += `\nFecha: ${new Date().toLocaleString()}`;
+
+    localStorage.setItem("fila1_txt", contenido);
+
+    const blob = new Blob([contenido], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "fila1_datos.txt";
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+    alert("Datos guardados correctamente");
+  });
+</script>
 
 </body>
 </html>
