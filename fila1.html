@@ -78,11 +78,13 @@
       <div class="fila">
         <input type="text" id="codigo${i}" placeholder="x[${i}] código">
 
-        <input
-          type="file"
-          accept="image/*"
-          capture="environment"
-          onchange="capturarImagen(event, ${i})"
+       <input
+  type="text"
+  id="codigo${i}"
+  placeholder="x[${i}] código"
+  oninput="x[${i}].codigo = this.value"
+/>
+
         >
 
         <img id="img${i}">
