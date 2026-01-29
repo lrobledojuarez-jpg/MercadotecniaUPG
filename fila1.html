@@ -73,16 +73,28 @@
   const contenedor = document.getElementById("contenedor");
   const entrada = document.getElementById("entradaCodigo");
 
-  for (let i = 0; i < total; i++) {
-    contenedor.innerHTML += `
-      <div class="fila">
-        <input type="text" id="codigo${i}" placeholder="x[${i}] código">
+for (let i = 0; i < total; i++) {
+  contenedor.innerHTML += `
+    <div class="fila">
+      <input
+        type="text"
+        id="codigo${i}"
+        placeholder="x[${i}] código"
+        oninput="x[${i}].codigo = this.value"
+      >
 
-       <input
-  type="text"
-  id="codigo${i}"
-  placeholder="x[${i}] código"
-  oninput="x[${i}].codigo = this.value"
+      <input
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onchange="capturarImagen(event, ${i})"
+      >
+
+      <img id="img${i}">
+    </div>
+  `;
+}
+  
 />
 
         >
