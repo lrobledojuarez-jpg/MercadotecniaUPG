@@ -1,52 +1,162 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Refrigerador</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <style>
+<meta charset="UTF-8">
+<title>Arcade del Amor 💘</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
     body {
-      margin: 0;
-      background: black;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 18px;
-      padding: 40px 0;
-      font-family: Arial, sans-serif;
+        margin: 0;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+        background: black;
+        color: white;
+        text-align: center;
     }
 
-    .fila {
-      width: 260px;
-      padding: 18px 0;
-      background: #ff00ff;
-      color: white;
-      font-size: 22px;
-      font-weight: bold;
-      text-align: center;
-      text-decoration: none;
-      border-radius: 6px;
-      transition: transform 0.15s ease;
+    canvas {
+        background: linear-gradient(#1a001a, #330033);
+        display: block;
+        margin: auto;
     }
 
-    .fila:hover {
-      transform: scale(1.03);
+    #menuFinal {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.9);
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
     }
-  </style>
+
+    h1 {
+        font-size: 40px;
+        color: pink;
+    }
+
+    button {
+        padding: 15px 30px;
+        margin: 10px;
+        font-size: 18px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    #si {
+        background-color: #ff4da6;
+        color: white;
+    }
+
+    #no {
+        background-color: gray;
+        color: white;
+        position: relative;
+    }
+</style>
 </head>
-
 <body>
 
-<a class="fila" href="fila1.html">FILA 1</a>
-<a class="fila" href="fila2.html">FILA 2</a>
-<a class="fila" href="fila3.html">FILA 3</a>
-<a class="fila" href="fila4.html">FILA 4</a>
-<a class="fila" href="fila5.html">FILA 5</a>
-<a class="fila" href="fila6.html">FILA 6</a>
-<a class="fila" href="fila7.html">FILA 7</a>
-<a class="fila" href="fila8.html">FILA 8</a>
-<a class="fila" href="fila9.html">FILA 9</a>
+<canvas id="gameCanvas" width="600" height="400"></canvas>
+
+<div id="menuFinal">
+    <h1>¿Quieres ser mi novia? 💖</h1>
+    <button id="si">¡Sí! 💘</button>
+    <button id="no">No 🙈</button>
+</div>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+let player = { x: 50, y: 180, size: 20, color: "pink" };
+let obstacles = [];
+let score = 0;
+let gameOver = false;
+
+function createObstacle() {
+    let size = 20 + Math.random() * 20;
+    obstacles.push({
+        x: canvas.width,
+        y: Math.random() * (canvas.height - size),
+        size: size,
+        color: "red"
+    });
+}
+
+function update() {
+    if (gameOver) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = player.color;
+    ctx.fillRect(player.x, player.y, player.size, player.size);
+
+    obstacles.forEach((obs, index) => {
+        obs.x -= 4;
+        ctx.fillStyle = obs.color;
+        ctx.fillRect(obs.x, obs.y, obs.size, obs.size);
+
+        if (
+            player.x < obs.x + obs.size &&
+            player.x + player.size > obs.x &&
+            player.y < obs.y + obs.size &&
+            player.y + player.size > obs.y
+        ) {
+            endGame();
+        }
+
+        if (obs.x + obs.size < 0) {
+            obstacles.splice(index, 1);
+            score++;
+        }
+    });
+
+    ctx.fillStyle = "white";
+    ctx.fillText("Puntos: " + score, 10, 20);
+
+    if (score >= 10) {
+        endGame(true);
+    }
+
+    requestAnimationFrame(update);
+}
+
+function endGame(win = false) {
+    gameOver = true;
+    if (win) {
+        document.getElementById("menuFinal").style.display = "flex";
+    } else {
+        alert("¡Perdiste! Intenta otra vez 💔");
+        location.reload();
+    }
+}
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowUp" && player.y > 0) player.y -= 20;
+    if (e.key === "ArrowDown" && player.y < canvas.height - player.size) player.y += 20;
+});
+
+setInterval(createObstacle, 1000);
+update();
+
+const btnNo = document.getElementById("no");
+btnNo.addEventListener("mouseover", () => {
+    btnNo.style.position = "absolute";
+    btnNo.style.top = Math.random() * 80 + "%";
+    btnNo.style.left = Math.random() * 80 + "%";
+});
+
+document.getElementById("si").addEventListener("click", () => {
+    alert("Sabía que dirías que sí 💍💖");
+});
+</script>
 
 </body>
 </html>
+
