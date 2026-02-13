@@ -2,67 +2,81 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Arcade del Amor 💘</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
     body {
         margin: 0;
         overflow: hidden;
         font-family: Arial, sans-serif;
         background: black;
-        color: white;
-        text-align: center;
+        touch-action: none;
     }
 
     canvas {
-        background: linear-gradient(#1a001a, #330033);
         display: block;
-        margin: auto;
+        background: linear-gradient(#1a001a, #330033);
+    }
+
+    #ui {
+        position: fixed;
+        bottom: 20px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        z-index: 10;
+    }
+
+    .btnControl {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: none;
+        font-size: 30px;
+        background: rgba(255,255,255,0.2);
+        color: white;
     }
 
     #menuFinal {
         display: none;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.9);
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.95);
         justify-content: center;
         align-items: center;
         flex-direction: column;
+        text-align: center;
+        z-index: 20;
     }
 
-    h1 {
-        font-size: 40px;
+    #menuFinal h1 {
         color: pink;
+        font-size: 28px;
+        padding: 20px;
     }
 
-    button {
-        padding: 15px 30px;
+    #menuFinal button {
+        padding: 15px 25px;
         margin: 10px;
         font-size: 18px;
-        border: none;
         border-radius: 10px;
-        cursor: pointer;
-        transition: 0.3s;
+        border: none;
     }
 
-    #si {
-        background-color: #ff4da6;
-        color: white;
-    }
-
-    #no {
-        background-color: gray;
-        color: white;
-        position: relative;
-    }
+    #si { background: #ff4da6; color: white; }
+    #no { background: gray; color: white; position: relative; }
 </style>
 </head>
 <body>
 
-<canvas id="gameCanvas" width="600" height="400"></canvas>
+<canvas id="game"></canvas>
+
+<div id="ui">
+    <button class="btnControl" id="up">⬆️</button>
+    <button class="btnControl" id="down">⬇️</button>
+</div>
 
 <div id="menuFinal">
     <h1>¿Quieres ser mi novia? 💖</h1>
@@ -71,87 +85,95 @@
 </div>
 
 <script>
-const canvas = document.getElementById("gameCanvas");
+const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
-let player = { x: 50, y: 180, size: 20, color: "pink" };
+function resizeCanvas(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+let player = { x: 50, y: 200, size: 30 };
 let obstacles = [];
 let score = 0;
-let gameOver = false;
+let speed = 4;
+let gameActive = true;
 
-function createObstacle() {
-    let size = 20 + Math.random() * 20;
+function createObstacle(){
+    let size = 30 + Math.random() * 30;
     obstacles.push({
         x: canvas.width,
         y: Math.random() * (canvas.height - size),
-        size: size,
-        color: "red"
+        size: size
     });
 }
 
-function update() {
-    if (gameOver) return;
+function update(){
+    if(!gameActive) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    ctx.fillStyle = player.color;
+    ctx.fillStyle = "pink";
     ctx.fillRect(player.x, player.y, player.size, player.size);
 
-    obstacles.forEach((obs, index) => {
-        obs.x -= 4;
-        ctx.fillStyle = obs.color;
+    obstacles.forEach((obs, i) => {
+        obs.x -= speed;
+        ctx.fillStyle = "red";
         ctx.fillRect(obs.x, obs.y, obs.size, obs.size);
 
-        if (
+        if(
             player.x < obs.x + obs.size &&
             player.x + player.size > obs.x &&
             player.y < obs.y + obs.size &&
             player.y + player.size > obs.y
-        ) {
-            endGame();
+        ){
+            location.reload();
         }
 
-        if (obs.x + obs.size < 0) {
-            obstacles.splice(index, 1);
+        if(obs.x + obs.size < 0){
+            obstacles.splice(i,1);
             score++;
         }
     });
 
     ctx.fillStyle = "white";
-    ctx.fillText("Puntos: " + score, 10, 20);
+    ctx.font = "20px Arial";
+    ctx.fillText("Puntos: " + score, 20, 40);
 
-    if (score >= 10) {
-        endGame(true);
+    if(score >= 12){
+        endGame();
     }
 
     requestAnimationFrame(update);
 }
 
-function endGame(win = false) {
-    gameOver = true;
-    if (win) {
-        document.getElementById("menuFinal").style.display = "flex";
-    } else {
-        alert("¡Perdiste! Intenta otra vez 💔");
-        location.reload();
-    }
+function endGame(){
+    gameActive = false;
+    document.getElementById("menuFinal").style.display = "flex";
 }
-
-document.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowUp" && player.y > 0) player.y -= 20;
-    if (e.key === "ArrowDown" && player.y < canvas.height - player.size) player.y += 20;
-});
 
 setInterval(createObstacle, 1000);
 update();
 
+/* CONTROLES TÁCTILES */
+document.getElementById("up").addEventListener("touchstart", () => {
+    if(player.y > 0) player.y -= 40;
+});
+document.getElementById("down").addEventListener("touchstart", () => {
+    if(player.y < canvas.height - player.size) player.y += 40;
+});
+
+/* BOTÓN NO ESCAPANDO */
 const btnNo = document.getElementById("no");
-btnNo.addEventListener("mouseover", () => {
+btnNo.addEventListener("touchstart", () => {
     btnNo.style.position = "absolute";
     btnNo.style.top = Math.random() * 80 + "%";
     btnNo.style.left = Math.random() * 80 + "%";
 });
 
+/* BOTÓN SÍ */
 document.getElementById("si").addEventListener("click", () => {
     alert("Sabía que dirías que sí 💍💖");
 });
